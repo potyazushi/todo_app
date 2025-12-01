@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            background: #f7f8fc;
+            background: #f5f6fa;
         }
         .card-custom {
             border-radius: 12px;
@@ -16,42 +16,59 @@
             text-decoration: line-through;
             color: #9aa0a6;
         }
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            .list-group-item {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+            .task-buttons {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
+                margin-top: 8px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
+<div class="container py-4">
 
     <!-- タイトル -->
-    <h1 class="mb-4 text-center fw-bold">📌 Todo App</h1>
+    <h1 class="text-center fw-bold mb-4">📌 Todo App</h1>
 
-    <!-- カード：フィルター -->
-    <div class="card card-custom mb-4 p-3">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+    <!-- フィルター -->
+    <div class="card card-custom p-3 mb-4">
+        <div class="row g-2 align-items-center">
 
             <!-- フィルターボタン -->
-            <div class="btn-group btn-group-sm mb-2 mb-md-0">
-                <a href="/" class="btn btn-outline-secondary {% if not filter %}active{% endif %}">すべて</a>
-                <a href="/?filter=active" class="btn btn-outline-secondary {% if filter == 'active' %}active{% endif %}">未完了</a>
-                <a href="/?filter=completed" class="btn btn-outline-secondary {% if filter == 'completed' %}active{% endif %}">完了</a>
-                <a href="/?filter=expired" class="btn btn-outline-secondary {% if filter == 'expired' %}active{% endif %}">期限切れ</a>
+            <div class="col-12 col-md-8 d-flex flex-wrap gap-2">
+                <a href="/" class="btn btn-outline-secondary btn-sm {% if not filter %}active{% endif %}">すべて</a>
+                <a href="/?filter=active" class="btn btn-outline-secondary btn-sm {% if filter == 'active' %}active{% endif %}">未完了</a>
+                <a href="/?filter=completed" class="btn btn-outline-secondary btn-sm {% if filter == 'completed' %}active{% endif %}">完了</a>
+                <a href="/?filter=expired" class="btn btn-outline-secondary btn-sm {% if filter == 'expired' %}active{% endif %}">期限切れ</a>
             </div>
 
             <!-- カテゴリ選択 -->
-            <form method="get" class="d-flex ms-md-3">
-                <input type="hidden" name="filter" value="{{ filter or '' }}">
-                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">全カテゴリ</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
-                    {% endfor %}
-                </select>
-            </form>
+            <div class="col-12 col-md-4">
+                <form method="get">
+                    <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">全カテゴリ</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- カード：新規追加 -->
-    <div class="card card-custom mb-4 p-4">
+    <!-- タスク追加フォーム -->
+    <div class="card card-custom p-4 mb-4">
         <form method="post" action="/create">
             <div class="row g-2">
                 <div class="col-12 col-md-4">
@@ -70,24 +87,22 @@
         </form>
     </div>
 
-    <!-- カード：タスク一覧 -->
+    <!-- タスク一覧 -->
     <div class="card card-custom p-3">
         <ul class="list-group list-group-flush">
             {% for todo in todos %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                <div>
+                <div class="w-100">
                     <!-- タイトル -->
                     <strong class="{% if todo.completed %}todo-completed{% endif %}">
                         {{ todo.title }}
                     </strong>
 
-                    <!-- カテゴリラベル -->
                     {% if todo.category %}
                         <span class="badge bg-info text-dark ms-2">{{ todo.category }}</span>
                     {% endif %}
 
-                    <!-- 期限表示 -->
                     <div class="mt-1">
                         <small class="text-muted">期限: {{ todo.due }}</small>
 
@@ -98,7 +113,7 @@
                 </div>
 
                 <!-- ボタン -->
-                <div class="d-flex gap-1">
+                <div class="task-buttons d-flex gap-2">
                     <a href="/edit/{{ todo.id }}" class="btn btn-outline-secondary btn-sm">編集</a>
                     {% if not todo.completed %}
                         <a href="/complete/{{ todo.id }}" class="btn btn-success btn-sm">完了</a>
